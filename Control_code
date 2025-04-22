@@ -2,12 +2,14 @@ import flet as ft
 import pandas as pd
 
 df_excel = pd.read_excel('Results.xlsx')
-
+i_count = 0
 count = 0
 def main(page: ft.Page):
     global count
     hello_text = ft.Text('Привет! Тапай хомяка')
     message_text = ft.Text(f'Вы кликнули: {count}')
+    note_text = ft.TextField(label='Заметка')
+    message_text2 = ft.Text()
 
     def Count(e):
         global count
@@ -29,10 +31,27 @@ def main(page: ft.Page):
         # Сохраняем обновленный DataFrame в Excel
         df_excel.to_excel('Results.xlsx', index=False)
 
+
+    def Note(e):
+
+        global i_count
+        message_text.value = note_text.value
+        Save_V2(i_count)
+        i_count += 1
+
+        page.update()
+
+    def Save_V2(i_count):
+        df_excel.loc[i_count, 'Note'] = message_text.value
+
+        # Сохраняем обновленный DataFrame в Excel
+        df_excel.to_excel('Results.xlsx', index=False)
+
     butt_click = ft.ElevatedButton("Тапнуть", on_click=Count)
     butt_del = ft.ElevatedButton("Сбросить", on_click=Del)
     butt_save = ft.ElevatedButton("Сохранить", on_click=Save)
+    butt_input = ft.ElevatedButton('Ввод', on_click=Note)
 
-    page.add(hello_text, butt_click, message_text, butt_del, butt_save)
+    page.add(hello_text, butt_click, message_text, butt_del, butt_save, note_text, butt_input, message_text2)
 
 ft.app(target=main)
